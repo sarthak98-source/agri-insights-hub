@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Smart Agri</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#16a34a', foreground: '#ffffff' },
+            secondary: { DEFAULT: '#f0fdf4', foreground: '#15803d' },
+            accent: { DEFAULT: '#dcfce7', foreground: '#166534' },
+            muted: { DEFAULT: '#f1f5f9', foreground: '#64748b' },
+            card: { DEFAULT: '#ffffff', foreground: '#1e293b' },
+            background: '#fafffe',
+            foreground: '#1e293b',
+            border: '#e2e8f0',
+            success: '#22c55e',
+            warning: '#f59e0b',
+            danger: '#ef4444'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-display { font-family: 'Poppins', sans-serif; }
+  </style>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-2">
+          <div class="p-2 rounded-lg bg-primary text-white">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          </div>
+          <span class="font-display font-bold text-lg hidden sm:block">Smart Agri</span>
+        </a>
+        <div class="hidden md:flex items-center gap-1">
+          <a href="index.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Home</a>
+          <a href="dashboard.html" class="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-white shadow-md">Dashboard</a>
+          <a href="alerts.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Alerts</a>
+          <a href="manufacturer.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Manufacturer</a>
+        </div>
+        <a href="login.html" class="px-4 py-2 border border-border rounded-lg text-sm font-medium hover:bg-muted">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="font-display text-3xl font-bold text-foreground mb-2">Retailer Dashboard</h1>
+      <p class="text-muted-foreground">Manage your inventory and view demand forecasts</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-border">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-muted-foreground">Total Products</span>
+          <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        </div>
+        <p class="text-2xl font-bold" id="total-products">0</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-border">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-muted-foreground">Total Stock</span>
+          <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <p class="text-2xl font-bold" id="total-stock">0</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-border">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-muted-foreground">Low Stock Items</span>
+          <svg class="h-5 w-5 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <p class="text-2xl font-bold text-danger" id="low-stock-count">0</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-border">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm text-muted-foreground">7-Day Forecast</span>
+          <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <p class="text-2xl font-bold text-primary" id="forecast-total">0</p>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+      <!-- Stock Entry Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-border p-6">
+        <h2 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+          <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+          Add New Stock
+        </h2>
+        <form id="stock-form" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Product Name</label>
+            <input type="text" id="product-name" placeholder="e.g., Urea Fertilizer" class="w-full px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary/50" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-2">Quantity (units)</label>
+            <input type="number" id="product-quantity" placeholder="e.g., 100" min="1" class="w-full px-4 py-3 rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary/50" required>
+          </div>
+          <button type="submit" class="w-full py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors">
+            Add Stock Entry
+          </button>
+        </form>
+      </div>
+
+      <!-- Demand Forecast Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-border p-6">
+        <h2 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+          <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          Demand Forecast (Next 7 Days)
+        </h2>
+        <div id="forecast-container" class="space-y-4">
+          <!-- Forecast items will be inserted here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Stock Table -->
+    <div class="mt-8 bg-white rounded-xl shadow-sm border border-border p-6">
+      <h2 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+        <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        Current Stock Inventory
+      </h2>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="text-left py-3 px-4 font-semibold text-sm">Product Name</th>
+              <th class="text-left py-3 px-4 font-semibold text-sm">Quantity</th>
+              <th class="text-left py-3 px-4 font-semibold text-sm">Predicted Demand</th>
+              <th class="text-left py-3 px-4 font-semibold text-sm">Status</th>
+            </tr>
+          </thead>
+          <tbody id="stock-table">
+            <!-- Stock rows will be inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Alerts Section -->
+    <div class="mt-8 bg-white rounded-xl shadow-sm border border-border p-6">
+      <h2 class="font-display text-xl font-bold mb-6 flex items-center gap-2">
+        <svg class="h-5 w-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        Alerts & Insights
+      </h2>
+      <div id="alerts-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Alert cards will be inserted here -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-4 right-4 bg-primary text-white px-6 py-3 rounded-xl shadow-lg hidden">
+    <span id="toast-message"></span>
+  </div>
+
+  <script>
+    // API Base URL
+    const API_BASE_URL = 'http://localhost:5000/api';
+
+    // Mock Data (for demo without backend)
+    let stockData = [
+      { id: 1, productName: 'Urea Fertilizer (50kg)', quantity: 150, predictedDemand: 200 },
+      { id: 2, productName: 'DAP Fertilizer (50kg)', quantity: 80, predictedDemand: 60 },
+      { id: 3, productName: 'Wheat Seeds (10kg)', quantity: 200, predictedDemand: 180 },
+      { id: 4, productName: 'Pesticide Spray (1L)', quantity: 45, predictedDemand: 100 },
+      { id: 5, productName: 'NPK Complex (25kg)', quantity: 120, predictedDemand: 110 }
+    ];
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.remove('hidden', 'bg-primary', 'bg-danger', 'bg-warning');
+      toast.classList.add(type === 'error' ? 'bg-danger' : type === 'warning' ? 'bg-warning' : 'bg-primary');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+    }
+
+    // Get status based on stock vs demand
+    function getStatus(stock, demand) {
+      const ratio = stock / demand;
+      if (ratio < 0.7) return { text: 'Low Stock', class: 'bg-red-100 text-red-700' };
+      if (ratio > 1.5) return { text: 'Overstock', class: 'bg-amber-100 text-amber-700' };
+      return { text: 'Optimal', class: 'bg-green-100 text-green-700' };
+    }
+
+    // Render stock table
+    function renderStockTable() {
+      const tbody = document.getElementById('stock-table');
+      tbody.innerHTML = stockData.map(item => {
+        const status = getStatus(item.quantity, item.predictedDemand);
+        return `
+          <tr class="border-b border-border hover:bg-muted/50">
+            <td class="py-4 px-4 font-medium">${item.productName}</td>
+            <td class="py-4 px-4">${item.quantity} units</td>
+            <td class="py-4 px-4">${item.predictedDemand} units</td>
+            <td class="py-4 px-4"><span class="px-3 py-1 rounded-full text-xs font-medium ${status.class}">${status.text}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Render forecast section
+    function renderForecast() {
+      const container = document.getElementById('forecast-container');
+      container.innerHTML = stockData.slice(0, 4).map(item => `
+        <div class="flex items-center justify-between p-4 bg-secondary rounded-lg">
+          <span class="font-medium text-sm">${item.productName}</span>
+          <span class="text-primary font-bold">${item.predictedDemand} units</span>
+        </div>
+      `).join('');
+    }
+
+    // Render alerts
+    function renderAlerts() {
+      const container = document.getElementById('alerts-container');
+      const alerts = stockData.map(item => {
+        const ratio = item.quantity / item.predictedDemand;
+        if (ratio < 0.7) {
+          return {
+            type: 'danger',
+            icon: '⚠️',
+            title: 'Low Stock Alert',
+            message: `${item.productName} may run out. Current: ${item.quantity}, Needed: ${item.predictedDemand}`,
+            bgClass: 'bg-red-50 border-red-200',
+            textClass: 'text-red-800'
+          };
+        }
+        if (ratio > 1.5) {
+          return {
+            type: 'warning',
+            icon: '📦',
+            title: 'Overstock Warning',
+            message: `${item.productName} has excess stock. Consider reducing orders.`,
+            bgClass: 'bg-amber-50 border-amber-200',
+            textClass: 'text-amber-800'
+          };
+        }
+        return {
+          type: 'success',
+          icon: '✅',
+          title: 'Optimal Level',
+          message: `${item.productName} stock is well-balanced.`,
+          bgClass: 'bg-green-50 border-green-200',
+          textClass: 'text-green-800'
+        };
+      });
+
+      container.innerHTML = alerts.map(alert => `
+        <div class="p-4 rounded-xl border ${alert.bgClass}">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">${alert.icon}</span>
+            <div>
+              <h4 class="font-semibold ${alert.textClass}">${alert.title}</h4>
+              <p class="text-sm mt-1 ${alert.textClass} opacity-80">${alert.message}</p>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Update stats
+    function updateStats() {
+      document.getElementById('total-products').textContent = stockData.length;
+      document.getElementById('total-stock').textContent = stockData.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('low-stock-count').textContent = stockData.filter(item => item.quantity / item.predictedDemand < 0.7).length;
+      document.getElementById('forecast-total').textContent = stockData.reduce((sum, item) => sum + item.predictedDemand, 0);
+    }
+
+    // Add stock form handler
+    document.getElementById('stock-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('product-name').value;
+      const quantity = parseInt(document.getElementById('product-quantity').value);
+      
+      // Check if product exists
+      const existing = stockData.find(item => item.productName.toLowerCase() === name.toLowerCase());
+      if (existing) {
+        existing.quantity += quantity;
+        showToast(`Updated ${name}: +${quantity} units`);
+      } else {
+        stockData.push({
+          id: Date.now(),
+          productName: name,
+          quantity: quantity,
+          predictedDemand: Math.floor(quantity * (0.7 + Math.random() * 0.6))
+        });
+        showToast(`Added ${name}: ${quantity} units`);
+      }
+
+      // Reset form and re-render
+      this.reset();
+      renderAll();
+
+      // Simulate API call
+      console.log('POST /api/stock', { productName: name, quantity });
+    });
+
+    // Render all components
+    function renderAll() {
+      renderStockTable();
+      renderForecast();
+      renderAlerts();
+      updateStats();
+    }
+
+    // Initial render
+    renderAll();
+  </script>
+</body>
+</html>

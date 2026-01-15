@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Future Scope - Smart Agri</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#16a34a', foreground: '#ffffff' },
+            secondary: { DEFAULT: '#f0fdf4', foreground: '#15803d' },
+            accent: { DEFAULT: '#dcfce7', foreground: '#166534' },
+            muted: { DEFAULT: '#f1f5f9', foreground: '#64748b' },
+            foreground: '#1e293b',
+            border: '#e2e8f0'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-display { font-family: 'Poppins', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%); }
+  </style>
+</head>
+<body class="bg-gray-50 text-foreground min-h-screen">
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-2">
+          <div class="p-2 rounded-lg bg-primary text-white">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          </div>
+          <span class="font-display font-bold text-lg hidden sm:block">Smart Agri</span>
+        </a>
+        <div class="hidden md:flex items-center gap-1">
+          <a href="index.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Home</a>
+          <a href="dashboard.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Dashboard</a>
+          <a href="about.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">About</a>
+          <a href="technology.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Technology</a>
+          <a href="alerts.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Alerts</a>
+          <a href="manufacturer.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Manufacturer</a>
+          <a href="future.html" class="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-white shadow-md">Future Scope</a>
+        </div>
+        <a href="login.html" class="px-4 py-2 border border-border rounded-lg text-sm font-medium hover:bg-muted">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 py-12">
+    <!-- Hero -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm font-medium mb-6">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        Roadmap
+      </div>
+      <h1 class="font-display text-4xl md:text-5xl font-bold text-foreground mb-6">Future Scope & Limitations</h1>
+      <p class="text-xl text-muted-foreground max-w-3xl mx-auto">Honest assessment of current limitations and exciting future possibilities</p>
+    </div>
+
+    <!-- Current Limitations -->
+    <section class="mb-16">
+      <div class="bg-white rounded-2xl shadow-sm border border-border p-8">
+        <div class="flex items-start gap-4 mb-8">
+          <div class="p-3 rounded-xl bg-amber-100">
+            <svg class="h-6 w-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </div>
+          <div>
+            <h2 class="font-display text-2xl font-bold text-foreground mb-2">Current Limitations</h2>
+            <p class="text-muted-foreground">Areas we're transparent about in this hackathon prototype</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="p-6 bg-amber-50 rounded-xl border border-amber-100">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-2xl">📊</span>
+              <h3 class="font-semibold text-amber-800">Sample Data</h3>
+            </div>
+            <p class="text-sm text-amber-700">Currently using simulated data for demonstration. Real-world implementation would require integration with actual retailer POS systems and historical sales data.</p>
+          </div>
+          <div class="p-6 bg-amber-50 rounded-xl border border-amber-100">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-2xl">🌤️</span>
+              <h3 class="font-semibold text-amber-800">Weather Integration</h3>
+            </div>
+            <p class="text-sm text-amber-700">Limited weather data accuracy. Full implementation would need reliable weather API integration with localized forecasting for agricultural zones.</p>
+          </div>
+          <div class="p-6 bg-amber-50 rounded-xl border border-amber-100">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-2xl">📍</span>
+              <h3 class="font-semibold text-amber-800">Geographic Coverage</h3>
+            </div>
+            <p class="text-sm text-amber-700">Prototype focuses on limited regions. Scaling to pan-India coverage requires extensive ground-level data collection and localization.</p>
+          </div>
+          <div class="p-6 bg-amber-50 rounded-xl border border-amber-100">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-2xl">🔗</span>
+              <h3 class="font-semibold text-amber-800">Supply Chain Integration</h3>
+            </div>
+            <p class="text-sm text-amber-700">Currently standalone system. Full value requires integration with logistics partners, manufacturers, and government databases.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Future Scope -->
+    <section class="mb-16">
+      <h2 class="font-display text-3xl font-bold text-center mb-12">Future Roadmap</h2>
+      
+      <div class="space-y-8">
+        <!-- Phase 1 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-border p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl">1</div>
+            <div>
+              <h3 class="font-display text-xl font-bold">Phase 1: IoT Integration</h3>
+              <p class="text-sm text-muted-foreground">6-12 months</p>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="p-4 bg-secondary rounded-lg">
+              <h4 class="font-semibold mb-2">🌡️ Environmental Sensors</h4>
+              <p class="text-sm text-muted-foreground">Temperature, humidity, and soil moisture sensors for real-time field conditions</p>
+            </div>
+            <div class="p-4 bg-secondary rounded-lg">
+              <h4 class="font-semibold mb-2">📦 Smart Inventory Tags</h4>
+              <p class="text-sm text-muted-foreground">RFID/NFC tags for automatic stock tracking at retailer shops</p>
+            </div>
+            <div class="p-4 bg-secondary rounded-lg">
+              <h4 class="font-semibold mb-2">📱 Mobile App</h4>
+              <p class="text-sm text-muted-foreground">Offline-capable mobile app for retailers in low-connectivity areas</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-border p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl">2</div>
+            <div>
+              <h3 class="font-display text-xl font-bold">Phase 2: Government Dashboard</h3>
+              <p class="text-sm text-muted-foreground">12-18 months</p>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="p-4 bg-secondary rounded-lg">
+              <h4 class="font-semibold mb-2">🏛️ Policy Dashboard</h4>
+              <p class="text-sm text-muted-foreground">Real-time insights for agricultural ministry decision making</p>
+            </div>
+            <div class="p-4 bg-secondary rounded-lg">
+              <h4 class="font-semibold mb-2">💰 Subsidy Optimization</h4>
+              <p class="text-sm text-muted-foreground">Data-driven allocation of fertilizer and seed subsidies</p>
+            </div>
+            <div class="p-4 bg-secondary rounded-lg">
+              <h4 class="font-semibold mb-2">📈 Crop Planning</h4>
+              <p class="text-sm text-muted-foreground">National-level crop demand forecasting for food security</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-border p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl">3</div>
+            <div>
+              <h3 class="font-display text-xl font-bold">Phase 3: Farmer Integration</h3>
+              <p class="text-sm text-muted-foreground">18-24 months</p>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="p-4 bg-secondary rounded-lg">
+              <h4 class="font-semibold mb-2">👨‍🌾 Farmer App</h4>
+              <p class="text-sm text-muted-foreground">Direct input from farmers on expected crop plans and input needs</p>
+            </div>
+            <div class="p-4 bg-secondary rounded-lg">
+              <h4 class="font-semibold mb-2">🎓 Advisory Services</h4>
+              <p class="text-sm text-muted-foreground">AI-powered crop advisory based on local conditions and market trends</p>
+            </div>
+            <div class="p-4 bg-secondary rounded-lg">
+              <h4 class="font-semibold mb-2">💳 Credit Integration</h4>
+              <p class="text-sm text-muted-foreground">Link with agri-credit systems for seamless input financing</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="bg-gradient-to-br from-primary to-green-400 rounded-2xl p-8 text-white">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-12 h-12 rounded-full bg-white text-primary flex items-center justify-center font-bold text-xl">4</div>
+            <div>
+              <h3 class="font-display text-xl font-bold">Phase 4: Advanced AI</h3>
+              <p class="text-sm text-white/80">24+ months</p>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="p-4 bg-white/10 backdrop-blur rounded-lg">
+              <h4 class="font-semibold mb-2">🧠 Deep Learning</h4>
+              <p class="text-sm text-white/80">Advanced neural networks for hyper-local demand prediction</p>
+            </div>
+            <div class="p-4 bg-white/10 backdrop-blur rounded-lg">
+              <h4 class="font-semibold mb-2">🛰️ Satellite Integration</h4>
+              <p class="text-sm text-white/80">Satellite imagery for crop health and area estimation</p>
+            </div>
+            <div class="p-4 bg-white/10 backdrop-blur rounded-lg">
+              <h4 class="font-semibold mb-2">🌐 Blockchain</h4>
+              <p class="text-sm text-white/80">Transparent supply chain with quality traceability</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vision Statement -->
+    <section class="text-center bg-white rounded-2xl shadow-sm border border-border p-12">
+      <div class="max-w-3xl mx-auto">
+        <div class="text-6xl mb-6">🌾</div>
+        <h2 class="font-display text-2xl font-bold mb-4">Our Vision</h2>
+        <p class="text-lg text-muted-foreground mb-6">
+          "To create a fully connected agricultural ecosystem where AI-powered insights flow seamlessly from farms to manufacturers, 
+          eliminating waste, reducing costs, and ensuring every farmer has timely access to the inputs they need for a successful harvest."
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <span class="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">Sustainable Agriculture</span>
+          <span class="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">AI-Assisted Decisions</span>
+          <span class="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">Industry 5.0</span>
+          <span class="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium">Food Security</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-foreground text-white py-12 mt-16">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p class="text-gray-400">&copy; 2024 Smart Agri-Input System. Hackathon Project - Industry 5.0 Solution</p>
+    </div>
+  </footer>
+</body>
+</html>

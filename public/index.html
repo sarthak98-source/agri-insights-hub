@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Agri-Input Inventory & Demand Forecasting System</title>
+  <meta name="description" content="AI-powered inventory management and demand forecasting for agricultural retailers. Reduce stock-outs, prevent overstock, and optimize your supply chain.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#16a34a', foreground: '#ffffff', glow: '#22c55e' },
+            secondary: { DEFAULT: '#f0fdf4', foreground: '#15803d' },
+            accent: { DEFAULT: '#dcfce7', foreground: '#166534' },
+            muted: { DEFAULT: '#f1f5f9', foreground: '#64748b' },
+            card: { DEFAULT: '#ffffff', foreground: '#1e293b' },
+            background: '#fafffe',
+            foreground: '#1e293b',
+            border: '#e2e8f0',
+            success: '#22c55e',
+            warning: '#f59e0b',
+            danger: '#ef4444'
+          },
+          fontFamily: {
+            display: ['Poppins', 'sans-serif'],
+            body: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-display { font-family: 'Poppins', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #16a34a 0%, #22c55e 50%, #4ade80 100%); }
+    .hero-pattern { background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2322c55e' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-sm" id="navbar">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-2 group">
+          <div class="p-2 rounded-lg bg-primary text-white group-hover:scale-105 transition-transform">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          </div>
+          <span class="font-display font-bold text-lg text-foreground hidden sm:block">Smart Agri</span>
+        </a>
+
+        <div class="hidden md:flex items-center gap-1" id="desktop-nav">
+          <a href="index.html" class="nav-link active flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all">Home</a>
+          <a href="dashboard.html" class="nav-link flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all">Dashboard</a>
+          <a href="about.html" class="nav-link flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all">About</a>
+          <a href="technology.html" class="nav-link flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all">Technology</a>
+          <a href="alerts.html" class="nav-link flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all">Alerts</a>
+          <a href="manufacturer.html" class="nav-link flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all">Manufacturer</a>
+          <a href="future.html" class="nav-link flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all">Future Scope</a>
+        </div>
+
+        <div class="hidden md:block">
+          <a href="login.html" class="px-4 py-2 border border-border rounded-lg text-sm font-medium hover:bg-muted transition-colors">Retailer Login</a>
+        </div>
+
+        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-muted transition-colors">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-border bg-white animate-fade-in">
+      <div class="px-4 py-4 space-y-2">
+        <a href="index.html" class="block px-4 py-3 rounded-lg text-sm font-medium bg-primary text-white">Home</a>
+        <a href="dashboard.html" class="block px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">Dashboard</a>
+        <a href="about.html" class="block px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">About</a>
+        <a href="technology.html" class="block px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">Technology</a>
+        <a href="alerts.html" class="block px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">Alerts</a>
+        <a href="manufacturer.html" class="block px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">Manufacturer</a>
+        <a href="future.html" class="block px-4 py-3 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">Future Scope</a>
+        <div class="pt-2 border-t border-border">
+          <a href="login.html" class="block w-full px-4 py-3 bg-primary text-white rounded-lg text-sm font-medium text-center">Retailer Login</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-[90vh] flex items-center hero-pattern">
+    <div class="absolute inset-0 gradient-bg opacity-5"></div>
+    <div class="max-w-7xl mx-auto px-4 py-20">
+      <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div class="space-y-8 animate-fade-in">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm font-medium">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Industry 5.0 Solution
+          </div>
+          
+          <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
+            Smart <span class="text-primary">Agri-Input</span> Inventory & Demand Forecasting
+          </h1>
+          
+          <p class="text-lg text-muted-foreground max-w-xl">
+            Eliminate stock-outs and overstock situations with AI-powered demand forecasting. 
+            Help agricultural retailers make data-driven decisions for optimal inventory management.
+          </p>
+          
+          <div class="flex flex-wrap gap-4">
+            <a href="dashboard.html" class="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+              Get Started
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+            <a href="about.html" class="inline-flex items-center gap-2 px-8 py-4 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary hover:text-white transition-all">
+              Learn More
+            </a>
+          </div>
+        </div>
+
+        <div class="relative animate-fade-in" style="animation-delay: 0.2s;">
+          <div class="absolute -inset-4 bg-gradient-to-r from-primary/20 to-primary-glow/20 rounded-3xl blur-2xl"></div>
+          <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=600&fit=crop" alt="Smart Agriculture" class="relative rounded-2xl shadow-2xl w-full object-cover">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem & Solution Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">The Problem We Solve</h2>
+        <p class="text-muted-foreground max-w-2xl mx-auto">Agricultural retailers face critical inventory challenges that impact their business and farmers</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 mb-16">
+        <div class="p-8 rounded-2xl bg-red-50 border border-red-100">
+          <div class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center mb-6">
+            <svg class="h-7 w-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+          </div>
+          <h3 class="font-display text-xl font-bold text-red-800 mb-3">Stock-Out Crisis</h3>
+          <p class="text-red-700">When retailers run out of essential inputs like seeds and fertilizers during peak season, farmers miss critical planting windows, leading to reduced yields.</p>
+        </div>
+
+        <div class="p-8 rounded-2xl bg-amber-50 border border-amber-100">
+          <div class="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center mb-6">
+            <svg class="h-7 w-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          </div>
+          <h3 class="font-display text-xl font-bold text-amber-800 mb-3">Overstock Waste</h3>
+          <p class="text-amber-700">Excess inventory ties up capital and leads to expired products, especially pesticides and fertilizers with limited shelf life.</p>
+        </div>
+      </div>
+
+      <div class="p-8 rounded-2xl gradient-bg text-white">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h3 class="font-display text-2xl font-bold mb-4">Our AI-Powered Solution</h3>
+            <p class="text-white/90 mb-6">Using XGBoost machine learning and real-time data analysis, we predict demand patterns and provide actionable insights to optimize your inventory.</p>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3"><svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Demand Forecasting with 85%+ accuracy</li>
+              <li class="flex items-center gap-3"><svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Real-time stock alerts</li>
+              <li class="flex items-center gap-3"><svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Inventory Optimization recommendations</li>
+            </ul>
+          </div>
+          <div class="text-center">
+            <div class="inline-block p-8 rounded-full bg-white/20 backdrop-blur">
+              <svg class="h-24 w-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-20 bg-secondary">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="text-center mb-16">
+        <h2 class="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">Key Features</h2>
+        <p class="text-muted-foreground max-w-2xl mx-auto">Everything you need to manage your agricultural inventory efficiently</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+            <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg mb-2">Demand Forecasting</h3>
+          <p class="text-sm text-muted-foreground">AI-powered predictions for next 7-30 days using XGBoost</p>
+        </div>
+
+        <div class="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+            <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg mb-2">Smart Alerts</h3>
+          <p class="text-sm text-muted-foreground">Real-time notifications for low stock and overstock situations</p>
+        </div>
+
+        <div class="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+            <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg mb-2">Stock Management</h3>
+          <p class="text-sm text-muted-foreground">Easy tracking and management of all agricultural inputs</p>
+        </div>
+
+        <div class="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+          <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
+            <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="font-semibold text-lg mb-2">AI Insights</h3>
+          <p class="text-sm text-muted-foreground">AI-assisted decision making for optimal inventory levels</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-foreground text-white py-16">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid md:grid-cols-4 gap-8 mb-12">
+        <div class="md:col-span-2">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="p-2 rounded-lg bg-primary">
+              <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            </div>
+            <span class="font-display font-bold text-xl">Smart Agri</span>
+          </div>
+          <p class="text-gray-400 mb-4 max-w-md">AI-powered inventory management and demand forecasting for agricultural retailers. Building sustainable agriculture through technology.</p>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-4">Quick Links</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="dashboard.html" class="hover:text-white transition-colors">Dashboard</a></li>
+            <li><a href="about.html" class="hover:text-white transition-colors">About</a></li>
+            <li><a href="technology.html" class="hover:text-white transition-colors">Technology</a></li>
+            <li><a href="alerts.html" class="hover:text-white transition-colors">Alerts</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-semibold mb-4">More</h4>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="manufacturer.html" class="hover:text-white transition-colors">Manufacturer</a></li>
+            <li><a href="future.html" class="hover:text-white transition-colors">Future Scope</a></li>
+            <li><a href="login.html" class="hover:text-white transition-colors">Retailer Login</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-gray-700 text-center text-gray-400 text-sm">
+        <p>&copy; 2024 Smart Agri-Input System. Hackathon Project - Industry 5.0 Solution</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Active nav link styling
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.classList.contains('active')) {
+        link.classList.add('bg-primary', 'text-white', 'shadow-md');
+      } else {
+        link.classList.add('text-gray-500', 'hover:text-foreground', 'hover:bg-muted');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alerts & Insights - Smart Agri</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#16a34a', foreground: '#ffffff' },
+            secondary: { DEFAULT: '#f0fdf4', foreground: '#15803d' },
+            accent: { DEFAULT: '#dcfce7', foreground: '#166534' },
+            muted: { DEFAULT: '#f1f5f9', foreground: '#64748b' },
+            foreground: '#1e293b',
+            border: '#e2e8f0',
+            danger: '#ef4444',
+            warning: '#f59e0b',
+            success: '#22c55e'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-display { font-family: 'Poppins', sans-serif; }
+    .pulse-animation { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  </style>
+</head>
+<body class="bg-gray-50 text-foreground min-h-screen">
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between h-16">
+        <a href="index.html" class="flex items-center gap-2">
+          <div class="p-2 rounded-lg bg-primary text-white">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          </div>
+          <span class="font-display font-bold text-lg hidden sm:block">Smart Agri</span>
+        </a>
+        <div class="hidden md:flex items-center gap-1">
+          <a href="index.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Home</a>
+          <a href="dashboard.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Dashboard</a>
+          <a href="about.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">About</a>
+          <a href="technology.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Technology</a>
+          <a href="alerts.html" class="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-white shadow-md">Alerts</a>
+          <a href="manufacturer.html" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-muted">Manufacturer</a>
+        </div>
+        <a href="login.html" class="px-4 py-2 border border-border rounded-lg text-sm font-medium hover:bg-muted">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 py-12">
+    <!-- Hero -->
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent text-accent-foreground text-sm font-medium mb-6">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        Real-time Monitoring
+      </div>
+      <h1 class="font-display text-4xl md:text-5xl font-bold text-foreground mb-6">Alerts & Insights</h1>
+      <p class="text-xl text-muted-foreground max-w-3xl mx-auto">Stay informed with intelligent alerts and actionable insights for your inventory</p>
+    </div>
+
+    <!-- Alert Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+      <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
+          <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <p class="text-3xl font-bold text-red-600" id="critical-count">2</p>
+        <p class="text-sm text-red-700">Critical Alerts</p>
+      </div>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+        <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
+          <svg class="h-6 w-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <p class="text-3xl font-bold text-amber-600" id="warning-count">1</p>
+        <p class="text-sm text-amber-700">Warnings</p>
+      </div>
+      <div class="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
+          <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <p class="text-3xl font-bold text-green-600" id="optimal-count">2</p>
+        <p class="text-sm text-green-700">Optimal</p>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
+        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
+          <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+        </div>
+        <p class="text-3xl font-bold text-blue-600" id="total-count">5</p>
+        <p class="text-sm text-blue-700">Total Products</p>
+      </div>
+    </div>
+
+    <!-- Alert Categories -->
+    <div class="grid lg:grid-cols-3 gap-8 mb-12">
+      <!-- Low Stock Alerts -->
+      <div class="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+        <div class="bg-red-500 text-white px-6 py-4 flex items-center gap-3">
+          <svg class="h-6 w-6 pulse-animation" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <h2 class="font-display text-lg font-bold">Low Stock Alerts</h2>
+        </div>
+        <div class="p-6 space-y-4" id="low-stock-alerts">
+          <div class="p-4 bg-red-50 rounded-lg border border-red-100">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">⚠️</span>
+              <div>
+                <h4 class="font-semibold text-red-800">Urea Fertilizer (50kg)</h4>
+                <p class="text-sm text-red-600 mt-1">Stock: 150 units | Predicted Demand: 200 units</p>
+                <p class="text-xs text-red-500 mt-2">Action: Order 50+ units immediately</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-4 bg-red-50 rounded-lg border border-red-100">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">⚠️</span>
+              <div>
+                <h4 class="font-semibold text-red-800">Pesticide Spray (1L)</h4>
+                <p class="text-sm text-red-600 mt-1">Stock: 45 units | Predicted Demand: 100 units</p>
+                <p class="text-xs text-red-500 mt-2">Action: Urgent restock needed - 55+ units</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overstock Warnings -->
+      <div class="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+        <div class="bg-amber-500 text-white px-6 py-4 flex items-center gap-3">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          <h2 class="font-display text-lg font-bold">Overstock Warnings</h2>
+        </div>
+        <div class="p-6 space-y-4" id="overstock-alerts">
+          <div class="p-4 bg-amber-50 rounded-lg border border-amber-100">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">📦</span>
+              <div>
+                <h4 class="font-semibold text-amber-800">DAP Fertilizer (50kg)</h4>
+                <p class="text-sm text-amber-600 mt-1">Stock: 80 units | Predicted Demand: 60 units</p>
+                <p class="text-xs text-amber-500 mt-2">Suggestion: Reduce next order by 20 units</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optimal Stock -->
+      <div class="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+        <div class="bg-green-500 text-white px-6 py-4 flex items-center gap-3">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <h2 class="font-display text-lg font-bold">Optimal Stock</h2>
+        </div>
+        <div class="p-6 space-y-4" id="optimal-alerts">
+          <div class="p-4 bg-green-50 rounded-lg border border-green-100">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">✅</span>
+              <div>
+                <h4 class="font-semibold text-green-800">Wheat Seeds (10kg)</h4>
+                <p class="text-sm text-green-600 mt-1">Stock: 200 units | Predicted Demand: 180 units</p>
+                <p class="text-xs text-green-500 mt-2">Status: Well balanced inventory</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-4 bg-green-50 rounded-lg border border-green-100">
+            <div class="flex items-start gap-3">
+              <span class="text-2xl">✅</span>
+              <div>
+                <h4 class="font-semibold text-green-800">NPK Complex (25kg)</h4>
+                <p class="text-sm text-green-600 mt-1">Stock: 120 units | Predicted Demand: 110 units</p>
+                <p class="text-xs text-green-500 mt-2">Status: Optimal stock level maintained</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Insights Section -->
+    <section class="bg-white rounded-2xl shadow-sm border border-border p-8">
+      <h2 class="font-display text-2xl font-bold mb-6 flex items-center gap-3">
+        <div class="p-2 rounded-lg bg-primary/10">
+          <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        </div>
+        AI-Powered Insights
+      </h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
+          <h3 class="font-semibold text-blue-800 mb-3">📈 Demand Trend Analysis</h3>
+          <p class="text-sm text-blue-700">Fertilizer demand is expected to increase by 15% in the next 2 weeks due to the approaching planting season. Consider increasing stock for Urea and NPK products.</p>
+        </div>
+        <div class="p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100">
+          <h3 class="font-semibold text-purple-800 mb-3">🎯 Optimization Recommendation</h3>
+          <p class="text-sm text-purple-700">Based on historical data, maintaining stock at 110% of predicted demand provides optimal balance between availability and storage costs.</p>
+        </div>
+        <div class="p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100">
+          <h3 class="font-semibold text-green-800 mb-3">🌾 Seasonal Alert</h3>
+          <p class="text-sm text-green-700">Kharif season approaching. Historical data shows 40% increase in pesticide demand. Prepare inventory accordingly.</p>
+        </div>
+        <div class="p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-100">
+          <h3 class="font-semibold text-amber-800 mb-3">💡 Cost Saving Tip</h3>
+          <p class="text-sm text-amber-700">Bulk ordering DAP and Urea together can save 8% on logistics. Next optimal order window: 5 days from now.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-foreground text-white py-12 mt-16">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p class="text-gray-400">&copy; 2024 Smart Agri-Input System. Hackathon Project - Industry 5.0 Solution</p>
+    </div>
+  </footer>
+</body>
+</html>
