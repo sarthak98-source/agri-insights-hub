@@ -2,15 +2,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { SignedIn, SignedOut, ClerkLoaded, ClerkLoading } from '@clerk/clerk-react';
+
 import Index from "./pages/Index";
-import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import About from "./pages/About";
-import Technology from "./pages/Technology";
-import Impact from "./pages/Impact";
-import FutureScope from "./pages/FutureScope";
 import NotFound from "./pages/NotFound";
+import { Layout } from "@/components/Layout";
 
 const queryClient = new QueryClient();
 
@@ -21,14 +20,62 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/technology" element={<Technology />} />
-          <Route path="/impact" element={<Impact />} />
-          <Route path="/future" element={<FutureScope />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          {/* Public Landing Page */}
+          <Route
+            path="/"
+            element={
+              <>
+                <SignedIn>
+                  <Navigate to="/dashboard" replace />
+                </SignedIn>
+                <SignedOut>
+                  <Index />
+                </SignedOut>
+              </>
+            }
+          />
+
+          {/* Public About Page */}
+          <Route
+            path="/about"
+            element={
+              <>
+                <SignedIn>
+                  <Navigate to="/dashboard" replace />
+                </SignedIn>
+                <SignedOut>
+                  <About />
+                </SignedOut>
+              </>
+            }
+          />
+
+          {/* Protected Dashboard Route */}
+          <Route
+            path="/dashboard"
+            element={
+              <>
+                <ClerkLoading>
+                  <div className="min-h-screen flex items-center justify-center bg-background">
+                    <div className="text-center space-y-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                      <p className="text-muted-foreground">Loading...</p>
+                    </div>
+                  </div>
+                </ClerkLoading>
+                <ClerkLoaded>
+                  <SignedIn>
+                    <Dashboard />
+                  </SignedIn>
+                  <SignedOut>
+                    <Navigate to="/" replace />
+                  </SignedOut>
+                </ClerkLoaded>
+              </>
+            }
+          />
+
+          {/* 404 Not Found */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

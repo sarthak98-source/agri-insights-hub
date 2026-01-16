@@ -1,16 +1,24 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Leaf, LayoutDashboard, Info, Cpu, TrendingUp, Lightbulb } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  Menu,
+  X,
+  Leaf,
+  Info,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-const navLinks = [
-  { path: '/', label: 'Home', icon: Leaf },
-  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/about', label: 'About', icon: Info },
-  { path: '/technology', label: 'Technology', icon: Cpu },
-  { path: '/impact', label: 'Impact', icon: TrendingUp },
-  { path: '/future', label: 'Future Scope', icon: Lightbulb },
+import {
+  SignedIn,
+  SignedOut,
+  UserButton,
+  SignInButton,
+} from "@clerk/clerk-react";
+
+const publicNavLinks = [
+  { path: "/", label: "Home", icon: Leaf },
+  { path: "/about", label: "About", icon: Info },
 ];
 
 export const Navbar = () => {
@@ -18,95 +26,132 @@ export const Navbar = () => {
   const location = useLocation();
 
   return (
-    <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
+    <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex h-16 items-center justify-between">
+
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="p-2 rounded-lg bg-primary text-primary-foreground group-hover:scale-105 transition-transform">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="p-2 bg-primary text-primary-foreground rounded-lg">
               <Leaf className="h-5 w-5" />
             </div>
-            <span className="font-display font-bold text-lg text-foreground hidden sm:block">
-              Smart Agri
-            </span>
+            <span className="font-bold hidden sm:block">Smart Agri</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = location.pathname === link.path;
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
-                    isActive
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                  {link.label}
-                </Link>
-              );
-            })}
-          </div>
+          {/* Desktop Nav - Only show public links when signed out */}
+          <SignedOut>
+            <div className="hidden md:flex gap-1">
+              {publicNavLinks.map((link) => {
+                const Icon = link.icon;
+                const active = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-lg text-sm",
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-secondary"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </SignedOut>
 
-          {/* Login Button (Desktop) */}
+          {/* When signed in, show dashboard link */}
+          <SignedIn>
+            <div className="hidden md:flex gap-1">
+              <Link
+                to="/dashboard"
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg text-sm",
+                  location.pathname === "/dashboard"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-secondary"
+                )}
+              >
+                Dashboard
+              </Link>
+            </div>
+          </SignedIn>
+
+          {/* Auth */}
           <div className="hidden md:block">
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                Retailer Login
-              </Button>
-            </Link>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button variant="outline" size="sm">
+                  Signuo/Login
+                </Button>
+              </SignInButton>
+            </SignedOut>
+
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
-          >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden">
+            {isOpen ? <X /> : <Menu />}
           </button>
         </div>
-      </div>
 
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden border-t border-border bg-card animate-fade-in">
-          <div className="container mx-auto px-4 py-4 space-y-2">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = location.pathname === link.path;
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                  {link.label}
-                </Link>
-              );
-            })}
-            <div className="pt-2 border-t border-border">
-              <Link to="/login" onClick={() => setIsOpen(false)}>
-                <Button variant="default" className="w-full">
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="md:hidden py-4 space-y-2">
+            <SignedOut>
+              {publicNavLinks.map((link) => {
+                const Icon = link.icon;
+                const active = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-lg text-sm",
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-secondary"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {link.label}
+                  </Link>
+                );
+              })}
+              <SignInButton mode="modal">
+                <Button variant="outline" size="sm" className="w-full">
                   Retailer Login
                 </Button>
+              </SignInButton>
+            </SignedOut>
+
+            <SignedIn>
+              <Link
+                to="/dashboard"
+                onClick={() => setIsOpen(false)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-lg text-sm",
+                  location.pathname === "/dashboard"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-secondary"
+                )}
+              >
+                Dashboard
               </Link>
-            </div>
+              <div className="px-4 py-2">
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            </SignedIn>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </nav>
   );
 };

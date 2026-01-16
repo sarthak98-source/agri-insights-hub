@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Layout } from '@/components/Layout';
+import { SignInButton } from "@clerk/clerk-react";
 import { 
   ArrowRight, 
   BarChart3, 
@@ -75,12 +76,12 @@ const Index = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <Link to="/login">
+             <SignInButton mode="modal">
                 <Button variant="hero" size="xl">
                   Get Started
                   <ArrowRight className="h-5 w-5" />
                 </Button>
-              </Link>
+              </SignInButton>
               <Link to="/about">
                 <Button variant="outline" size="xl" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
                   Learn More
@@ -230,12 +231,15 @@ const Index = () => {
             Join the future of agricultural supply chain management with 
             AI-powered demand forecasting and inventory optimization.
           </p>
-          <Link to="/login">
-            <Button size="xl" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
+          <SignInButton mode="modal">
+            <Button
+              size="xl"
+              className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+            >
               Login as Retailer
               <ArrowRight className="h-5 w-5" />
             </Button>
-          </Link>
+          </SignInButton>
         </div>
       </section>
     </Layout>
