@@ -5,6 +5,9 @@ import {
   X,
   Leaf,
   Info,
+  Package,
+  AlertTriangle,
+  Cloud,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,6 +22,13 @@ import {
 const publicNavLinks = [
   { path: "/", label: "Home", icon: Leaf },
   { path: "/about", label: "About", icon: Info },
+];
+
+const protectedNavLinks = [
+  { path: "/dashboard", label: "Dashboard", icon: Leaf },
+  { path: "/inventory", label: "Inventory", icon: Package },
+  { path: "/alerts", label: "Alerts", icon: AlertTriangle },
+  { path: "/weather", label: "Weather", icon: Cloud },
 ];
 
 export const Navbar = () => {
@@ -63,20 +73,28 @@ export const Navbar = () => {
             </div>
           </SignedOut>
 
-          {/* When signed in, show dashboard link */}
+          {/* When signed in, show protected links */}
           <SignedIn>
             <div className="hidden md:flex gap-1">
-              <Link
-                to="/dashboard"
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg text-sm",
-                  location.pathname === "/dashboard"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-secondary"
-                )}
-              >
-                Dashboard
-              </Link>
+              {protectedNavLinks.map((link) => {
+                const Icon = link.icon;
+                const active = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-lg text-sm",
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-secondary"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {link.label}
+                  </Link>
+                );
+              })}
             </div>
           </SignedIn>
 
@@ -133,18 +151,26 @@ export const Navbar = () => {
             </SignedOut>
 
             <SignedIn>
-              <Link
-                to="/dashboard"
-                onClick={() => setIsOpen(false)}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg text-sm",
-                  location.pathname === "/dashboard"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-secondary"
-                )}
-              >
-                Dashboard
-              </Link>
+              {protectedNavLinks.map((link) => {
+                const Icon = link.icon;
+                const active = location.pathname === link.path;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsOpen(false)}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-lg text-sm",
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-secondary"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {link.label}
+                  </Link>
+                );
+              })}
               <div className="px-4 py-2">
                 <UserButton afterSignOutUrl="/" />
               </div>

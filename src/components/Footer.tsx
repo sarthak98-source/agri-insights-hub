@@ -58,7 +58,7 @@ export const Footer = () => {
         </div>
 
         <div className="mt-8 pt-8 border-t border-primary-foreground/20 text-center text-sm opacity-60">
-          <p>© 2024 Smart Agri-Input Inventory System. Built for Hackathon Demo.</p>
+          <p>© 2024 Smart Agri-Input Inventory System. All rights reserved by Shela Gang. Built for Hackathon Demo.</p>
           <p className="mt-1">Powered by XGBoost • Industry 5.0 • AI-Assisted Decision Making</p>
         </div>
       </div>

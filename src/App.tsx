@@ -8,6 +8,9 @@ import { SignedIn, SignedOut, ClerkLoaded, ClerkLoading } from '@clerk/clerk-rea
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import About from "./pages/About";
+import Inventory from "./pages/Inventory";
+import Alerts from "./pages/Alerts";
+import Weather from "./pages/Weather";
 import NotFound from "./pages/NotFound";
 import { Layout } from "@/components/Layout";
 
@@ -50,7 +53,7 @@ const App = () => (
             }
           />
 
-          {/* Protected Dashboard Route */}
+          {/* Protected Routes */}
           <Route
             path="/dashboard"
             element={
@@ -66,6 +69,78 @@ const App = () => (
                 <ClerkLoaded>
                   <SignedIn>
                     <Dashboard />
+                  </SignedIn>
+                  <SignedOut>
+                    <Navigate to="/" replace />
+                  </SignedOut>
+                </ClerkLoaded>
+              </>
+            }
+          />
+
+          <Route
+            path="/inventory"
+            element={
+              <>
+                <ClerkLoading>
+                  <div className="min-h-screen flex items-center justify-center bg-background">
+                    <div className="text-center space-y-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                      <p className="text-muted-foreground">Loading...</p>
+                    </div>
+                  </div>
+                </ClerkLoading>
+                <ClerkLoaded>
+                  <SignedIn>
+                    <Inventory />
+                  </SignedIn>
+                  <SignedOut>
+                    <Navigate to="/" replace />
+                  </SignedOut>
+                </ClerkLoaded>
+              </>
+            }
+          />
+
+          <Route
+            path="/alerts"
+            element={
+              <>
+                <ClerkLoading>
+                  <div className="min-h-screen flex items-center justify-center bg-background">
+                    <div className="text-center space-y-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                      <p className="text-muted-foreground">Loading...</p>
+                    </div>
+                  </div>
+                </ClerkLoading>
+                <ClerkLoaded>
+                  <SignedIn>
+                    <Alerts />
+                  </SignedIn>
+                  <SignedOut>
+                    <Navigate to="/" replace />
+                  </SignedOut>
+                </ClerkLoaded>
+              </>
+            }
+          />
+
+          <Route
+            path="/weather"
+            element={
+              <>
+                <ClerkLoading>
+                  <div className="min-h-screen flex items-center justify-center bg-background">
+                    <div className="text-center space-y-4">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                      <p className="text-muted-foreground">Loading...</p>
+                    </div>
+                  </div>
+                </ClerkLoading>
+                <ClerkLoaded>
+                  <SignedIn>
+                    <Weather />
                   </SignedIn>
                   <SignedOut>
                     <Navigate to="/" replace />

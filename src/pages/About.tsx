@@ -85,6 +85,51 @@ const About = () => {
         </div>
       </section>
 
+      {/* Company Overview */}
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-display font-bold text-foreground mb-4">
+                About Agri Insights Hub
+              </h2>
+              <p className="text-muted-foreground">
+                Empowering agricultural retailers with cutting-edge AI technology for smarter inventory management.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Our Mission</h3>
+                <p className="text-muted-foreground mb-6">
+                  To revolutionize agricultural supply chains by providing retailers with accurate demand forecasting 
+                  and intelligent inventory management solutions, ensuring sustainable farming practices and optimal resource utilization.
+                </p>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Our Vision</h3>
+                <p className="text-muted-foreground">
+                  A world where every agricultural retailer can make data-driven decisions, reducing waste, 
+                  preventing stock-outs, and contributing to a more sustainable and efficient food production system.
+                </p>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-semibold text-foreground mb-4">What We Do</h3>
+                <p className="text-muted-foreground mb-6">
+                  Agri Insights Hub leverages advanced machine learning algorithms to analyze historical sales data, 
+                  seasonal patterns, and market trends. Our AI-powered platform provides 7-day demand forecasts, 
+                  automated alerts, and actionable insights to help retailers optimize their inventory levels.
+                </p>
+                <h3 className="text-xl font-semibold text-foreground mb-4">Our Technology</h3>
+                <p className="text-muted-foreground">
+                  Built on XGBoost machine learning models with 94.5% forecast accuracy, our system integrates 
+                  seamlessly with existing retail operations, providing real-time insights through an intuitive web dashboard.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Problem Statement */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
