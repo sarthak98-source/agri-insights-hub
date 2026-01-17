@@ -145,7 +145,7 @@ export const Navbar = () => {
               })}
               <SignInButton mode="modal">
                 <Button variant="outline" size="sm" className="w-full">
-                  Retailer Login
+                  Signin/Login
                 </Button>
               </SignInButton>
             </SignedOut>
