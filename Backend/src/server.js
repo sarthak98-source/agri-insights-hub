@@ -8,9 +8,7 @@ app.get('/', (req, res) => {
     res.json('backend is running correctly');
 });
 
-app.listen(ENV.PORT, () => {
-    console.log(`Server is running on port ${ENV.PORT}`);
-});
+
 
 
 // starting the server with DB connection alongwith error handling
