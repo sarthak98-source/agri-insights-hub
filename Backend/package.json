@@ -1,19 +1,27 @@
 {
-  "name": "backend",
+  "name": "agri-insights-backend",
   "version": "1.0.0",
-  "main": "src/server.js",
-  "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js"
-  },
+  "description": "Backend for Agri Insights Hub",
+  "main": "server.js",
   "type": "module",
-  "keywords": [],
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [
+    "agriculture",
+    "inventory",
+    "api"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "dotenv": "^17.2.3",
-    "express": "^5.2.1",
-    "mongoose": "^9.1.4"
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }

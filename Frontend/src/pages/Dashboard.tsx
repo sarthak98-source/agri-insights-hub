@@ -1,99 +1,239 @@
 import { useState, useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useUser } from '@clerk/clerk-react';
 import { 
   Package, 
-  Plus, 
   TrendingUp, 
   AlertTriangle, 
-  CheckCircle2,
   AlertCircle,
   RefreshCw,
-  BarChart3,
   Leaf,
-  Clock
+  DollarSign,
+  Calendar,
+  ShoppingCart,
+  XCircle
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import { 
-  getStock, 
-  addStock, 
-  getForecast, 
-  generateAlerts,
-  type StockItem,
-  type ForecastData,
-  type Alert
+  getProducts, 
+  getProductStats,
+  type Product,
+  type ProductStats
 } from '@/lib/api';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts';
 
 const Dashboard = () => {
-  const [stock, setStock] = useState<StockItem[]>([]);
-  const [forecast, setForecast] = useState<ForecastData | null>(null);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const { user } = useUser();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [stats, setStats] = useState<ProductStats>({
+    totalProducts: 0,
+    lowStock: 0,
+    overStock: 0,
+    optimal: 0,
+    outOfStock: 0,
+    totalQuantity: 0,
+    totalStockValue: 0,
+    expiringSoon: 0,
+    averageCostPerUnit: 0
+  });
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [productName, setProductName] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [chartFilter, setChartFilter] = useState<'cost' | 'quantity' | 'expiry'>('cost');
+  const [trendFilter, setTrendFilter] = useState<'products' | 'quantity' | 'value'>('quantity');
 
-  // Fetch initial data
+  const userId = user?.id || 'guest';
+
   useEffect(() => {
-    loadData();
-  }, []);
+    if (userId) {
+      loadData();
+    }
+  }, [userId]);
 
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [stockData, forecastData] = await Promise.all([
-        getStock(),
-        getForecast()
+      const [productsData, statsData] = await Promise.all([
+        getProducts(userId),
+        getProductStats(userId)
       ]);
-      setStock(stockData);
-      setForecast(forecastData);
-      setAlerts(generateAlerts(forecastData.predictions));
+      
+      setProducts(productsData);
+      setStats(statsData);
+
+      if (statsData.lowStock > 0 || statsData.outOfStock > 0) {
+        toast({
+          title: `⚠️ Inventory Alert`,
+          description: `${statsData.outOfStock} out of stock, ${statsData.lowStock} low stock items need attention.`,
+          variant: "destructive",
+        });
+      }
+
+      // Check for expiring products (within 5 days)
+      if (statsData.expiringSoon > 0) {
+        toast({
+          title: `📅 Expiry Alert`,
+          description: `${statsData.expiringSoon} product(s) expiring within 5 days!`,
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error loading data",
-        description: "Using sample data for demonstration.",
+        description: "Failed to load dashboard data. Please try again.",
         variant: "destructive",
       });
     }
     setIsLoading(false);
   };
 
-  const handleAddStock = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!productName || !quantity) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter both product name and quantity.",
-        variant: "destructive",
-      });
-      return;
-    }
+  // Prepare chart data
+  const getChartData = () => {
+    if (!products || products.length === 0) return [];
+    
+    const sortedProducts = [...products].sort((a, b) => 
+      new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+    ).slice(0, 10);
 
-    setIsSubmitting(true);
-    try {
-      await addStock({ productName, quantity: parseInt(quantity) });
-      toast({
-        title: "Stock Added",
-        description: `Successfully added ${quantity} units of ${productName}.`,
-      });
-      setProductName('');
-      setQuantity('');
-      loadData(); // Refresh data
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add stock. Please try again.",
-        variant: "destructive",
-      });
+    if (chartFilter === 'cost') {
+      return sortedProducts.map(p => ({
+        name: p.productName.substring(0, 15),
+        value: (p.quantity || 0) * (p.costPerUnit || 0),
+        label: 'Total Value'
+      }));
+    } else if (chartFilter === 'quantity') {
+      return sortedProducts.map(p => ({
+        name: p.productName.substring(0, 15),
+        value: p.quantity || 0,
+        label: 'Quantity'
+      }));
+    } else {
+      return sortedProducts
+        .filter(p => p.expiryDate)
+        .map(p => {
+          const daysToExpiry = Math.ceil((new Date(p.expiryDate!).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+          return {
+            name: p.productName.substring(0, 15),
+            value: daysToExpiry,
+            label: 'Days to Expiry'
+          };
+        });
     }
-    setIsSubmitting(false);
   };
 
-  const lowStockAlerts = alerts.filter(a => a.type === 'low_stock');
-  const overstockAlerts = alerts.filter(a => a.type === 'overstock');
-  const optimalAlerts = alerts.filter(a => a.type === 'optimal');
+  // Calculate dynamic monthly trend from actual product data
+  const getMonthlyTrendData = () => {
+    if (!products || products.length === 0) return [];
+
+    // Group products by month based on createdAt
+    const monthlyData = new Map();
+    
+    products.forEach(product => {
+      if (!product.createdAt) return;
+      
+      const date = new Date(product.createdAt);
+      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+      
+      if (!monthlyData.has(monthKey)) {
+        monthlyData.set(monthKey, {
+          month: monthName,
+          products: 0,
+          quantity: 0,
+          value: 0
+        });
+      }
+      
+      const existing = monthlyData.get(monthKey);
+      existing.products += 1;
+      existing.quantity += product.quantity;
+      existing.value += product.quantity * (product.costPerUnit || 0);
+    });
+
+    // Convert to array and sort by date
+    return Array.from(monthlyData.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .slice(-6) // Last 6 months
+      .map(([_, data]) => data);
+  };
+
+  const monthlyTrendData = getMonthlyTrendData();
+
+  // Calculate trend change percentage
+  const getTrendChange = () => {
+    if (monthlyTrendData.length < 2) return null;
+    const current = monthlyTrendData[monthlyTrendData.length - 1]?.quantity || 0;
+    const previous = monthlyTrendData[monthlyTrendData.length - 2]?.quantity || 1;
+    return Math.round(((current - previous) / previous) * 100);
+  };
+
+  const kpiCards = [
+    {
+      title: 'Total Products',
+      value: stats.totalProducts || 0,
+      icon: Package,
+      color: 'bg-blue-500',
+      textColor: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      change: null
+    },
+    {
+      title: 'Total Stock Value',
+      value: `₹${(stats.totalStockValue || 0).toLocaleString()}`,
+      icon: DollarSign,
+      color: 'bg-green-500',
+      textColor: 'text-green-600',
+      bgColor: 'bg-green-50',
+      change: null
+    },
+    {
+      title: 'Low Stock Items',
+      value: stats.lowStock || 0,
+      icon: AlertTriangle,
+      color: 'bg-orange-500',
+      textColor: 'text-orange-600',
+      bgColor: 'bg-orange-50',
+      change: null
+    },
+    {
+      title: 'Out of Stock',
+      value: stats.outOfStock || 0,
+      icon: XCircle,
+      color: 'bg-red-500',
+      textColor: 'text-red-600',
+      bgColor: 'bg-red-50',
+      change: null
+    },
+    {
+      title: 'Expiring Soon',
+      value: stats.expiringSoon || 0,
+      icon: Calendar,
+      color: 'bg-purple-500',
+      textColor: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+      change: null
+    },
+    {
+      title: 'Monthly Trend',
+      value: monthlyTrendData.length > 0 ? monthlyTrendData[monthlyTrendData.length - 1]?.quantity || 0 : 0,
+      icon: TrendingUp,
+      color: 'bg-cyan-500',
+      textColor: 'text-cyan-600',
+      bgColor: 'bg-cyan-50',
+      change: getTrendChange() !== null ? `${getTrendChange()}%` : null
+    }
+  ];
 
   return (
     <Layout>
@@ -105,331 +245,260 @@ const Dashboard = () => {
               <div>
                 <h1 className="text-2xl md:text-3xl font-display font-bold flex items-center gap-3">
                   <Leaf className="h-8 w-8" />
-                  Retailer Dashboard
+                  Dashboard Overview
                 </h1>
                 <p className="text-primary-foreground/80 mt-1">
-                  Smart Agri-Input Inventory Management
+                  Welcome back, {user?.firstName || 'User'}! Here's your inventory summary.
                 </p>
               </div>
-              <Button 
-                onClick={loadData} 
-                variant="outline" 
-                className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
-                disabled={isLoading}
-              >
-                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                Refresh Data
-              </Button>
+              <div className="flex gap-3">
+                <Link to="/inventory">
+                  <Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+                    <ShoppingCart className="h-4 w-4" />
+                    Manage Inventory
+                  </Button>
+                </Link>
+                <Button 
+                  onClick={loadData} 
+                  variant="outline" 
+                  className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+                  disabled={isLoading}
+                >
+                  <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="container mx-auto px-4 py-8">
-          {/* Stats Overview */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-card rounded-xl border border-border p-4 md:p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                  <Package className="h-5 w-5" />
+          {/* KPI Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {kpiCards.map((kpi, index) => {
+              const Icon = kpi.icon;
+              return (
+                <div 
+                  key={index}
+                  className="bg-card rounded-2xl border border-border p-6 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`p-3 rounded-xl ${kpi.bgColor}`}>
+                      <Icon className={`h-6 w-6 ${kpi.textColor}`} />
+                    </div>
+                    {kpi.change && (
+                      <span className="text-sm font-semibold text-green-600 flex items-center gap-1">
+                        <TrendingUp className="h-4 w-4" />
+                        {kpi.change}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-1">{kpi.title}</p>
+                  <p className="text-3xl font-bold text-foreground">{kpi.value}</p>
                 </div>
-                <span className="text-sm text-muted-foreground">Total Products</span>
+              );
+            })}
+          </div>
+
+          {/* Charts Section */}
+          <div className="grid lg:grid-cols-2 gap-8 mb-8">
+            {/* Product Analysis Chart */}
+            <div className="bg-card rounded-2xl border border-border p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-display font-bold text-foreground">
+                  Product Analysis
+                </h2>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={chartFilter === 'cost' ? 'default' : 'outline'}
+                    onClick={() => setChartFilter('cost')}
+                  >
+                    Value
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={chartFilter === 'quantity' ? 'default' : 'outline'}
+                    onClick={() => setChartFilter('quantity')}
+                  >
+                    Quantity
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={chartFilter === 'expiry' ? 'default' : 'outline'}
+                    onClick={() => setChartFilter('expiry')}
+                  >
+                    Expiry
+                  </Button>
+                </div>
               </div>
-              <p className="text-2xl md:text-3xl font-bold text-foreground">{stock.length}</p>
+              
+              {products.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  No data available. Add products to see analysis.
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={getChartData()}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={100} />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="#22c55e" />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
-            
-            <div className="bg-card rounded-xl border border-border p-4 md:p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-destructive/10 text-destructive">
-                  <AlertTriangle className="h-5 w-5" />
+
+            {/* Monthly Demand Trend */}
+            <div className="bg-card rounded-2xl border border-border p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-display font-bold text-foreground">
+                  Monthly Inventory Trend
+                </h2>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant={trendFilter === 'products' ? 'default' : 'outline'}
+                    onClick={() => setTrendFilter('products')}
+                  >
+                    Products
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={trendFilter === 'quantity' ? 'default' : 'outline'}
+                    onClick={() => setTrendFilter('quantity')}
+                  >
+                    Quantity
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={trendFilter === 'value' ? 'default' : 'outline'}
+                    onClick={() => setTrendFilter('value')}
+                  >
+                    Value (₹)
+                  </Button>
                 </div>
-                <span className="text-sm text-muted-foreground">Low Stock</span>
               </div>
-              <p className="text-2xl md:text-3xl font-bold text-destructive">{lowStockAlerts.length}</p>
-            </div>
-            
-            <div className="bg-card rounded-xl border border-border p-4 md:p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-warning/10 text-warning">
-                  <AlertCircle className="h-5 w-5" />
+              {monthlyTrendData.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  No monthly data available yet. Add products to see trends.
                 </div>
-                <span className="text-sm text-muted-foreground">Overstock</span>
-              </div>
-              <p className="text-2xl md:text-3xl font-bold text-warning">{overstockAlerts.length}</p>
-            </div>
-            
-            <div className="bg-card rounded-xl border border-border p-4 md:p-6">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-lg bg-success/10 text-success">
-                  <CheckCircle2 className="h-5 w-5" />
-                </div>
-                <span className="text-sm text-muted-foreground">Optimal</span>
-              </div>
-              <p className="text-2xl md:text-3xl font-bold text-success">{optimalAlerts.length}</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={monthlyTrendData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey={trendFilter} 
+                      stroke="#3b82f6" 
+                      strokeWidth={2}
+                      name={trendFilter === 'products' ? 'Products Added' : trendFilter === 'quantity' ? 'Total Quantity' : 'Total Value (₹)'}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Left Column - Stock Entry & Current Stock */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Stock Entry Section */}
-              <section className="bg-card rounded-2xl border border-border p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-lg bg-primary text-primary-foreground">
-                    <Plus className="h-5 w-5" />
-                  </div>
-                  <h2 className="text-xl font-display font-bold text-foreground">
-                    Add New Stock
-                  </h2>
-                </div>
+          {/* Quick Stats */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-card rounded-xl border border-border p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <Package className="h-5 w-5 text-blue-600" />
+                <span className="text-sm text-muted-foreground">Total Units</span>
+              </div>
+              <p className="text-2xl font-bold text-foreground">{stats.totalQuantity || 0}</p>
+            </div>
 
-                <form onSubmit={handleAddStock} className="grid md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="productName">Product Name</Label>
-                    <Input
-                      id="productName"
-                      placeholder="e.g., NPK Fertilizer (50kg)"
-                      value={productName}
-                      onChange={(e) => setProductName(e.target.value)}
-                      className="h-11"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="quantity">Quantity</Label>
-                    <Input
-                      id="quantity"
-                      type="number"
-                      placeholder="Enter units"
-                      value={quantity}
-                      onChange={(e) => setQuantity(e.target.value)}
-                      className="h-11"
-                    />
-                  </div>
-                  <div className="flex items-end">
-                    <Button 
-                      type="submit" 
-                      variant="hero" 
-                      className="w-full h-11"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <RefreshCw className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <>
-                          <Plus className="h-4 w-4" />
-                          Add Stock
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              </section>
+            <div className="bg-card rounded-xl border border-border p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <DollarSign className="h-5 w-5 text-green-600" />
+                <span className="text-sm text-muted-foreground">Avg Cost/Unit</span>
+              </div>
+              <p className="text-2xl font-bold text-foreground">₹{(stats.averageCostPerUnit || 0).toFixed(2)}</p>
+            </div>
 
-              {/* Current Stock Section */}
-              <section className="bg-card rounded-2xl border border-border p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-lg bg-primary text-primary-foreground">
-                    <Package className="h-5 w-5" />
-                  </div>
-                  <h2 className="text-xl font-display font-bold text-foreground">
-                    Current Stock
-                  </h2>
-                </div>
+            <div className="bg-card rounded-xl border border-border p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <AlertCircle className="h-5 w-5 text-orange-600" />
+                <span className="text-sm text-muted-foreground">Overstock</span>
+              </div>
+              <p className="text-2xl font-bold text-foreground">{stats.overStock || 0}</p>
+            </div>
 
-                {isLoading ? (
-                  <div className="flex items-center justify-center py-12">
-                    <RefreshCw className="h-8 w-8 text-primary animate-spin" />
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-border">
-                          <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">
-                            Product Name
-                          </th>
-                          <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">
-                            Quantity Available
-                          </th>
-                          <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">
-                            Status
-                          </th>
+            <div className="bg-card rounded-xl border border-border p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <Package className="h-5 w-5 text-green-600" />
+                <span className="text-sm text-muted-foreground">Optimal Stock</span>
+              </div>
+              <p className="text-2xl font-bold text-foreground">{stats.optimal || 0}</p>
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="mt-8 bg-card rounded-2xl border border-border p-6">
+            <h2 className="text-xl font-display font-bold text-foreground mb-6">
+              Recent Products
+            </h2>
+            {products.length === 0 ? (
+              <div className="text-center py-12">
+                <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-4">No products yet. Start by adding inventory!</p>
+                <Link to="/inventory">
+                  <Button variant="default">
+                    Go to Inventory
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-muted-foreground">Product</th>
+                      <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Quantity</th>
+                      <th className="text-right py-3 px-4 text-sm font-semibold text-muted-foreground">Value</th>
+                      <th className="text-center py-3 px-4 text-sm font-semibold text-muted-foreground">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.slice(0, 5).map((product) => {
+                      const value = product.quantity * (product.costPerUnit || 0);
+                      const isLowStock = product.quantity > 0 && product.quantity <= (product.minStockLevel || 10);
+                      const isOutOfStock = product.quantity === 0;
+                      
+                      return (
+                        <tr key={product._id} className="border-b border-border/50 hover:bg-secondary/50">
+                          <td className="py-3 px-4 text-foreground font-medium">{product.productName}</td>
+                          <td className="py-3 px-4 text-right font-mono">{product.quantity} {product.unit}</td>
+                          <td className="py-3 px-4 text-right font-mono">₹{value.toFixed(2)}</td>
+                          <td className="py-3 px-4 text-center">
+                            {isOutOfStock ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs font-medium">
+                                Out of Stock
+                              </span>
+                            ) : isLowStock ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-medium">
+                                Low Stock
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                                In Stock
+                              </span>
+                            )}
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {stock.map((item, index) => {
-                          const alert = alerts.find(a => a.productName === item.productName);
-                          return (
-                            <tr 
-                              key={index} 
-                              className="border-b border-border/50 hover:bg-secondary/50 transition-colors"
-                            >
-                              <td className="py-4 px-4 text-foreground font-medium">
-                                {item.productName}
-                              </td>
-                              <td className="py-4 px-4 text-right text-foreground">
-                                <span className="font-mono font-bold">{item.quantity}</span>
-                                <span className="text-muted-foreground ml-1">units</span>
-                              </td>
-                              <td className="py-4 px-4 text-center">
-                                {alert?.type === 'low_stock' && (
-                                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-destructive/10 text-destructive text-xs font-medium">
-                                    <AlertTriangle className="h-3 w-3" />
-                                    Low Stock
-                                  </span>
-                                )}
-                                {alert?.type === 'overstock' && (
-                                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-warning/10 text-warning text-xs font-medium">
-                                    <AlertCircle className="h-3 w-3" />
-                                    Overstock
-                                  </span>
-                                )}
-                                {alert?.type === 'optimal' && (
-                                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-success/10 text-success text-xs font-medium">
-                                    <CheckCircle2 className="h-3 w-3" />
-                                    Optimal
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </section>
-            </div>
-
-            {/* Right Column - Forecast & Alerts */}
-            <div className="space-y-8">
-              {/* Demand Forecast Section */}
-              <section className="bg-card rounded-2xl border border-border p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-lg bg-primary text-primary-foreground">
-                    <TrendingUp className="h-5 w-5" />
-                  </div>
-                  <h2 className="text-xl font-display font-bold text-foreground">
-                    Demand Forecast
-                  </h2>
-                </div>
-
-                {forecast && (
-                  <>
-                    <div className="bg-primary/5 rounded-xl p-4 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                        <Clock className="h-4 w-4" />
-                        <span>Forecast Period: {forecast.forecastPeriod}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <BarChart3 className="h-4 w-4" />
-                        <span>Model: {forecast.modelUsed} ({forecast.accuracy}% accuracy)</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 max-h-64 overflow-y-auto">
-                      {forecast.predictions.slice(0, 5).map((pred, index) => (
-                        <div 
-                          key={index}
-                          className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
-                        >
-                          <span className="text-sm text-foreground truncate max-w-[150px]">
-                            {pred.productName}
-                          </span>
-                          <span className="font-mono font-bold text-primary">
-                            {pred.predictedDemand} units
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </section>
-
-              {/* Alerts Section */}
-              <section className="bg-card rounded-2xl border border-border p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-lg bg-destructive text-destructive-foreground">
-                    <AlertTriangle className="h-5 w-5" />
-                  </div>
-                  <h2 className="text-xl font-display font-bold text-foreground">
-                    Alerts & Insights
-                  </h2>
-                </div>
-
-                <div className="space-y-3 max-h-80 overflow-y-auto">
-                  {/* Low Stock Alerts */}
-                  {lowStockAlerts.map((alert, index) => (
-                    <div 
-                      key={`low-${index}`}
-                      className="p-4 rounded-xl bg-destructive/10 border border-destructive/20"
-                    >
-                      <div className="flex items-start gap-3">
-                        <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
-                        <div>
-                          <p className="font-semibold text-destructive text-sm">
-                            LOW STOCK ALERT
-                          </p>
-                          <p className="text-sm text-foreground font-medium mt-1">
-                            {alert.productName}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {alert.message}
-                          </p>
-                          <div className="flex gap-4 mt-2 text-xs">
-                            <span>Stock: <strong>{alert.currentStock}</strong></span>
-                            <span>Demand: <strong>{alert.predictedDemand}</strong></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Overstock Alerts */}
-                  {overstockAlerts.map((alert, index) => (
-                    <div 
-                      key={`over-${index}`}
-                      className="p-4 rounded-xl bg-warning/10 border border-warning/20"
-                    >
-                      <div className="flex items-start gap-3">
-                        <AlertCircle className="h-5 w-5 text-warning mt-0.5 shrink-0" />
-                        <div>
-                          <p className="font-semibold text-warning text-sm">
-                            OVERSTOCK ALERT
-                          </p>
-                          <p className="text-sm text-foreground font-medium mt-1">
-                            {alert.productName}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {alert.message}
-                          </p>
-                          <div className="flex gap-4 mt-2 text-xs">
-                            <span>Stock: <strong>{alert.currentStock}</strong></span>
-                            <span>Demand: <strong>{alert.predictedDemand}</strong></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Optimal Status */}
-                  {optimalAlerts.length > 0 && (
-                    <div className="p-4 rounded-xl bg-success/10 border border-success/20">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="h-5 w-5 text-success mt-0.5 shrink-0" />
-                        <div>
-                          <p className="font-semibold text-success text-sm">
-                            OPTIMAL STOCK
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {optimalAlerts.length} products have optimal stock levels for predicted demand.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </section>
-            </div>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       </div>

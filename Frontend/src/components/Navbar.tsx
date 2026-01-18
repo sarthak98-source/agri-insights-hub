@@ -1,3 +1,4 @@
+// components/Navbar.tsx
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
 
 import {
   SignedIn,
@@ -98,19 +100,20 @@ export const Navbar = () => {
             </div>
           </SignedIn>
 
-          {/* Auth */}
-          <div className="hidden md:block">
+          {/* Auth & Alert Bell */}
+          <div className="hidden md:flex items-center gap-2">
+            <SignedIn>
+             
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+
             <SignedOut>
               <SignInButton mode="modal">
                 <Button variant="outline" size="sm">
-                  Signuo/Login
+                  Signup/Login
                 </Button>
               </SignInButton>
             </SignedOut>
-
-            <SignedIn>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
           </div>
 
           {/* Mobile Menu Button */}
@@ -171,7 +174,8 @@ export const Navbar = () => {
                   </Link>
                 );
               })}
-              <div className="px-4 py-2">
+              <div className="px-4 py-2 flex items-center gap-2">
+          
                 <UserButton afterSignOutUrl="/" />
               </div>
             </SignedIn>
