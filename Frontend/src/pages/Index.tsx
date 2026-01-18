@@ -24,7 +24,7 @@ const Index = () => {
     {
       icon: BarChart3,
       title: 'AI Demand Forecasting',
-      description: 'XGBoost-powered predictions for the next 7 days of product demand.',
+      description: 'AI-powered predictions for the next 5 days of product demand.',
     },
     {
       icon: AlertTriangle,
@@ -39,10 +39,10 @@ const Index = () => {
   ];
 
   const stats = [
-    { value: '94.5%', label: 'Forecast Accuracy' },
+    { value: '85.5%', label: 'Forecast Accuracy' },
     { value: '40%', label: 'Stock-out Reduction' },
     { value: '25%', label: 'Waste Reduction' },
-    { value: '7 Days', label: 'Forecast Window' },
+    { value: '5 Days', label: 'Forecast Window' },
   ];
 
   return (
@@ -178,7 +178,7 @@ const Index = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-4">
+                {/* <div className="flex gap-4">
                   <div className="p-2 rounded-lg bg-muted text-muted-foreground h-fit">
                     <BarChart3 className="h-5 w-5" />
                   </div>
@@ -189,14 +189,14 @@ const Index = () => {
                       leading to suboptimal inventory management.
                     </p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="p-6 rounded-2xl bg-card border border-border">
                 <Cpu className="h-8 w-8 text-primary mb-4" />
-                <h4 className="font-semibold text-foreground mb-2">XGBoost AI</h4>
+                <h4 className="font-semibold text-foreground mb-2">AI Based</h4>
                 <p className="text-sm text-muted-foreground">
                   Advanced machine learning for accurate demand prediction
                 </p>
@@ -236,7 +236,7 @@ const Index = () => {
               size="xl"
               className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
             >
-              Login as Retailer
+             Sign-in / Login 
               <ArrowRight className="h-5 w-5" />
             </Button>
           </SignInButton>

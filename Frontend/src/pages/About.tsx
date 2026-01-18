@@ -40,22 +40,22 @@ const About = () => {
     {
       step: '2',
       title: 'AI Analysis',
-      description: 'XGBoost model analyzes historical data, seasonal patterns, and market trends.',
+      description: 'Python model analyzes historical data, seasonal patterns, and market trends.',
     },
     {
       step: '3',
       title: 'Demand Prediction',
-      description: 'System generates accurate 7-day demand forecasts for each product.',
+      description: 'System generates accurate 5-day demand forecasts for each product.',
     },
     {
       step: '4',
-      title: 'Smart Alerts',
-      description: 'Automatic alerts notify retailers about low-stock or overstock situations.',
+      title: 'Weather Forecast ',
+      description: 'Weather data is incorporated to refine demand predictions based on upcoming conditions.',
     },
     {
       step: '5',
-      title: 'Informed Decisions',
-      description: 'Retailers make data-driven ordering decisions to optimize inventory.',
+      title: 'Smart Alerts',
+     description: 'Automatic alerts notify retailers about low-stock or overstock situations.',
     },
   ];
 
@@ -116,12 +116,12 @@ const About = () => {
                 <h3 className="text-xl font-semibold text-foreground mb-4">What We Do</h3>
                 <p className="text-muted-foreground mb-6">
                   Agri Insights Hub leverages advanced machine learning algorithms to analyze historical sales data, 
-                  seasonal patterns, and market trends. Our AI-powered platform provides 7-day demand forecasts, 
+                  seasonal patterns, and market trends. Our AI-powered platform provides 5-day demand forecasts, 
                   automated alerts, and actionable insights to help retailers optimize their inventory levels.
                 </p>
                 <h3 className="text-xl font-semibold text-foreground mb-4">Our Technology</h3>
                 <p className="text-muted-foreground">
-                  Built on XGBoost machine learning models with 94.5% forecast accuracy, our system integrates 
+                  Built on Python machine learning models with 85.5% forecast accuracy, our system integrates 
                   seamlessly with existing retail operations, providing real-time insights through an intuitive web dashboard.
                 </p>
               </div>
@@ -240,16 +240,16 @@ const About = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="p-6 rounded-2xl bg-primary text-primary-foreground">
-                <div className="text-4xl font-display font-bold mb-2">94.5%</div>
+                <div className="text-4xl font-display font-bold mb-2">85.5%</div>
                 <p className="text-sm opacity-90">Forecast Accuracy</p>
               </div>
               <div className="p-6 rounded-2xl bg-card border border-border">
-                <div className="text-4xl font-display font-bold text-primary mb-2">7</div>
+                <div className="text-4xl font-display font-bold text-primary mb-2">5</div>
                 <p className="text-sm text-muted-foreground">Day Forecast Window</p>
               </div>
               <div className="p-6 rounded-2xl bg-card border border-border">
                 <div className="text-4xl font-display font-bold text-primary mb-2">40%</div>
-                <p className="text-sm text-muted-foreground">Stock-out Reduction</p>
+                <p className="text-sm text-muted-foreground">Stock-out Reductio</p>
               </div>
               <div className="p-6 rounded-2xl bg-success text-success-foreground">
                 <div className="text-4xl font-display font-bold mb-2">25%</div>

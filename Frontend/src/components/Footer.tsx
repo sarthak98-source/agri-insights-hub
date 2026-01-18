@@ -23,10 +23,10 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm opacity-80">
-              <li><Link to="/" className="hover:opacity-100 transition-opacity">Home</Link></li>
               <li><Link to="/dashboard" className="hover:opacity-100 transition-opacity">Dashboard</Link></li>
-              <li><Link to="/about" className="hover:opacity-100 transition-opacity">About System</Link></li>
-              <li><Link to="/technology" className="hover:opacity-100 transition-opacity">Technology</Link></li>
+              <li><Link to="/" className="hover:opacity-100 transition-opacity">AI Suggestion</Link></li>
+              <li><Link to="/about" className="hover:opacity-100 transition-opacity">Inventory Managment</Link></li>
+
             </ul>
           </div>
 
@@ -34,9 +34,9 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Resources</h4>
             <ul className="space-y-2 text-sm opacity-80">
-              <li><Link to="/impact" className="hover:opacity-100 transition-opacity">Impact & Benefits</Link></li>
-              <li><Link to="/future" className="hover:opacity-100 transition-opacity">Future Scope</Link></li>
-              <li><Link to="/login" className="hover:opacity-100 transition-opacity">Retailer Login</Link></li>
+              <li><Link to="/impact" className="hover:opacity-100 transition-opacity">Weather</Link></li>
+              <li><Link to="/future" className="hover:opacity-100 transition-opacity">Stocks Prediction</Link></li>
+              <li><Link to="/login" className="hover:opacity-100 transition-opacity">Notification</Link></li>
             </ul>
           </div>
 
@@ -44,22 +44,45 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Connect</h4>
             <div className="flex gap-3">
-              <a href="#" className="p-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors">
+              {/* GitHub */}
+              <a
+                href="https://github.com/sarthak98-source/agri-insights-hub"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors"
+              >
                 <Github className="h-5 w-5" />
               </a>
-              <a href="#" className="p-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors">
+
+              {/* Gmail */}
+              <a
+                href="mailto:more96899@gmail.com"
+                className="p-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors"
+              >
                 <Mail className="h-5 w-5" />
               </a>
-              <a href="#" className="p-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors">
+
+              {/* Share Website */}
+              <a
+                href="https://media1.tenor.com/m/ODepiYMYFT0AAAAd/andha-hai-kya-loveday-andha-hai-kya-lavde.gif"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors"
+              >
                 <ExternalLink className="h-5 w-5" />
               </a>
             </div>
           </div>
         </div>
 
+
+
+
+
+
         <div className="mt-8 pt-8 border-t border-primary-foreground/20 text-center text-sm opacity-60">
-          <p>© 2024 Smart Agri-Input Inventory System. All rights reserved by Shela Gang. Built for Hackathon Demo.</p>
-          <p className="mt-1">Powered by XGBoost • Industry 5.0 • AI-Assisted Decision Making</p>
+          <p>© 2026 Smart Agri-Input Inventory System. All rights reserved by Shela Gang. Built for PRPCERM Hackathon </p>
+          <p className="mt-1">Powered by AI • Industry 5.0 • AI-Assisted Decision Making</p>
         </div>
       </div>
     </footer>
