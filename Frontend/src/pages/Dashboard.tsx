@@ -9,7 +9,6 @@ import {
   AlertCircle,
   RefreshCw,
   Leaf,
-  DollarSign,
   Calendar,
   ShoppingCart,
   XCircle
@@ -34,6 +33,27 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+
+// Custom Indian Rupee Icon Component
+const IndianRupee = ({ className = "h-6 w-6" }: { className?: string }) => {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M6 3h12" />
+      <path d="M6 8h12" />
+      <path d="M6 13l8.5 8" />
+      <path d="M6 13h6.5a3.5 3.5 0 1 0 0-7H6" />
+    </svg>
+  );
+};
 
 const Dashboard = () => {
   const { user } = useUser();
@@ -191,7 +211,7 @@ const Dashboard = () => {
     {
       title: 'Total Stock Value',
       value: `₹${(stats.totalStockValue || 0).toLocaleString()}`,
-      icon: DollarSign,
+      icon: IndianRupee,  // Changed from DollarSign to IndianRupee
       color: 'bg-green-500',
       textColor: 'text-green-600',
       bgColor: 'bg-green-50',
@@ -417,7 +437,7 @@ const Dashboard = () => {
 
             <div className="bg-card rounded-xl border border-border p-6">
               <div className="flex items-center gap-3 mb-2">
-                <DollarSign className="h-5 w-5 text-green-600" />
+                <IndianRupee className="h-5 w-5 text-green-600" />
                 <span className="text-sm text-muted-foreground">Avg Cost/Unit</span>
               </div>
               <p className="text-2xl font-bold text-foreground">₹{(stats.averageCostPerUnit || 0).toFixed(2)}</p>

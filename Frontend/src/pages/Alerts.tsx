@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Layout } from '@/components/Layout';
 import { useUser } from '@clerk/clerk-react';
-import { RefreshCw, Bell, TrendingUp, Package, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Bell, TrendingUp, Package, AlertTriangle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { 
@@ -33,11 +33,23 @@ const Alerts = () => {
       setAlerts(alertsData);
 
       // Show notification if there are critical alerts
-      const criticalAlerts = alertsData.filter(a => a.type === 'low_stock');
-      if (criticalAlerts.length > 0) {
+      const outOfStockAlerts = alertsData.filter(a => a.type === 'out_of_stock');
+      const lowStockAlerts = alertsData.filter(a => a.type === 'low_stock');
+      const totalCritical = outOfStockAlerts.length + lowStockAlerts.length;
+      
+      if (totalCritical > 0) {
+        let description = '';
+        if (outOfStockAlerts.length > 0 && lowStockAlerts.length > 0) {
+          description = `🚫 ${outOfStockAlerts.length} out of stock | ⚠️ ${lowStockAlerts.length} low stock - Immediate attention required!`;
+        } else if (outOfStockAlerts.length > 0) {
+          description = `🚫 ${outOfStockAlerts.length} product(s) are out of stock - Order immediately!`;
+        } else {
+          description = `⚠️ ${lowStockAlerts.length} product(s) are low on stock - Reorder soon!`;
+        }
+        
         toast({
-          title: "⚠️ Critical Alerts Detected!",
-          description: `You have ${criticalAlerts.length} low stock alert(s) that need immediate attention.`,
+          title: "⚠️ Critical Inventory Alerts",
+          description: description,
           variant: "destructive",
         });
       }
@@ -52,14 +64,14 @@ const Alerts = () => {
   };
 
   const lowStockAlerts = alerts.filter(a => a.type === 'low_stock');
-  const overstockAlerts = alerts.filter(a => a.type === 'overstock');
+  const outOfStockAlerts = alerts.filter(a => a.type === 'out_of_stock');
   const optimalAlerts = alerts.filter(a => a.type === 'optimal');
 
   // Calculate insights
   const totalStock = products.reduce((sum, p) => sum + p.quantity, 0);
   const avgStock = products.length > 0 ? Math.round(totalStock / products.length) : 0;
-  const criticalCount = lowStockAlerts.length;
-  const warningCount = overstockAlerts.length;
+  const criticalCount = lowStockAlerts.length + outOfStockAlerts.length;
+  const outOfStockCount = outOfStockAlerts.length;
 
   return (
     <Layout>
@@ -91,17 +103,17 @@ const Alerts = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
             <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
+              <XCircle className="h-6 w-6 text-red-600" />
             </div>
-            <p className="text-3xl font-bold text-red-600">{criticalCount}</p>
-            <p className="text-sm text-red-700">Critical Alerts</p>
+            <p className="text-3xl font-bold text-red-600">{outOfStockCount}</p>
+            <p className="text-sm text-red-700">Out of Stock</p>
           </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
-            <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-3">
-              <Package className="h-6 w-6 text-amber-600" />
+          <div className="bg-orange-50 border border-orange-200 rounded-xl p-6 text-center">
+            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-3">
+              <AlertTriangle className="h-6 w-6 text-orange-600" />
             </div>
-            <p className="text-3xl font-bold text-amber-600">{warningCount}</p>
-            <p className="text-sm text-amber-700">Warnings</p>
+            <p className="text-3xl font-bold text-orange-600">{lowStockAlerts.length}</p>
+            <p className="text-sm text-orange-700">Low Stock</p>
           </div>
           <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
             <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
@@ -138,29 +150,36 @@ const Alerts = () => {
           <>
             {/* Alert Categories */}
             <div className="grid lg:grid-cols-3 gap-8 mb-12">
-              {/* Low Stock Alerts */}
+              {/* Out of Stock Alerts */}
               <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
-                <div className="bg-red-500 text-white px-6 py-4 flex items-center gap-3">
-                  <AlertTriangle className="h-6 w-6 pulse-animation" />
-                  <h2 className="font-display text-lg font-bold">Low Stock Alerts</h2>
+                <div className="bg-red-600 text-white px-6 py-4 flex items-center gap-3">
+                  <XCircle className="h-6 w-6 pulse-animation" />
+                  <h2 className="font-display text-lg font-bold">Out of Stock</h2>
                 </div>
                 <div className="p-6 space-y-4 max-h-96 overflow-y-auto">
-                  {lowStockAlerts.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-8">No low stock alerts</p>
+                  {outOfStockAlerts.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">No out of stock alerts</p>
                   ) : (
-                    lowStockAlerts.map((alert, index) => (
-                      <div key={index} className="p-4 bg-red-50 rounded-lg border border-red-100">
+                    outOfStockAlerts.map((alert, index) => (
+                      <div key={index} className="p-4 bg-red-50 rounded-lg border border-red-200">
                         <div className="flex items-start gap-3">
-                          <span className="text-2xl">⚠️</span>
+                          <span className="text-2xl">🚫</span>
                           <div className="flex-1">
                             <h4 className="font-semibold text-red-800">{alert.productName}</h4>
                             <p className="text-sm text-red-600 mt-1">
-                              Stock: {alert.currentStock} units | Min Level: {alert.minStockLevel} units
+                              Stock: {alert.currentStock} units | Required: {alert.minStockLevel} units minimum
                             </p>
                             <p className="text-xs text-red-500 mt-2">{alert.message}</p>
+                            <div className="mt-3 p-2 bg-red-100 rounded border border-red-200">
+                              <p className="text-xs font-semibold text-red-800 mb-1">💡 Suggested Action:</p>
+                              <p className="text-xs text-red-700">
+                                Order at least {(alert.minStockLevel || 10) * 2} units immediately to prevent sales loss. 
+                                Consider fast-track delivery options.
+                              </p>
+                            </div>
                             <div className="mt-3 flex gap-2">
-                              <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">
-                                Action Required
+                              <span className="px-2 py-1 bg-red-200 text-red-800 text-xs rounded-full font-bold">
+                                Urgent Action Required
                               </span>
                             </div>
                           </div>
@@ -171,29 +190,36 @@ const Alerts = () => {
                 </div>
               </div>
 
-              {/* Overstock Warnings */}
+              {/* Low Stock Alerts */}
               <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
-                <div className="bg-amber-500 text-white px-6 py-4 flex items-center gap-3">
-                  <Package className="h-6 w-6" />
-                  <h2 className="font-display text-lg font-bold">Overstock Warnings</h2>
+                <div className="bg-orange-500 text-white px-6 py-4 flex items-center gap-3">
+                  <AlertTriangle className="h-6 w-6 pulse-animation" />
+                  <h2 className="font-display text-lg font-bold">Low Stock Alerts</h2>
                 </div>
                 <div className="p-6 space-y-4 max-h-96 overflow-y-auto">
-                  {overstockAlerts.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-8">No overstock warnings</p>
+                  {lowStockAlerts.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">No low stock alerts</p>
                   ) : (
-                    overstockAlerts.map((alert, index) => (
-                      <div key={index} className="p-4 bg-amber-50 rounded-lg border border-amber-100">
+                    lowStockAlerts.map((alert, index) => (
+                      <div key={index} className="p-4 bg-orange-50 rounded-lg border border-orange-100">
                         <div className="flex items-start gap-3">
-                          <span className="text-2xl">📦</span>
+                          <span className="text-2xl">⚠️</span>
                           <div className="flex-1">
-                            <h4 className="font-semibold text-amber-800">{alert.productName}</h4>
-                            <p className="text-sm text-amber-600 mt-1">
-                              Stock: {alert.currentStock} units | Max Level: {alert.maxStockLevel} units
+                            <h4 className="font-semibold text-orange-800">{alert.productName}</h4>
+                            <p className="text-sm text-orange-600 mt-1">
+                              Stock: {alert.currentStock} units | Min Level: {alert.minStockLevel} units
                             </p>
-                            <p className="text-xs text-amber-500 mt-2">{alert.message}</p>
+                            <p className="text-xs text-orange-500 mt-2">{alert.message}</p>
+                            <div className="mt-3 p-2 bg-orange-100 rounded border border-orange-200">
+                              <p className="text-xs font-semibold text-orange-800 mb-1">💡 Suggested Action:</p>
+                              <p className="text-xs text-orange-700">
+                                Reorder {Math.max((alert.minStockLevel || 10) * 2 - alert.currentStock, alert.minStockLevel || 10)} units 
+                                to reach optimal stock level. Estimated time to stock out: 3-5 days.
+                              </p>
+                            </div>
                             <div className="mt-3 flex gap-2">
-                              <span className="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">
-                                Review Needed
+                              <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">
+                                Action Required
                               </span>
                             </div>
                           </div>
@@ -260,8 +286,8 @@ const Alerts = () => {
                   <h3 className="font-semibold text-blue-800 mb-3">📈 Inventory Overview</h3>
                   <p className="text-sm text-blue-700">
                     You have {products.length} products with an average stock of {avgStock} units. 
-                    {criticalCount > 0 && ` ${criticalCount} product(s) need immediate restocking.`}
-                    {warningCount > 0 && ` ${warningCount} product(s) are overstocked.`}
+                    {outOfStockCount > 0 && ` ${outOfStockCount} product(s) are completely out of stock!`}
+                    {lowStockAlerts.length > 0 && ` ${lowStockAlerts.length} product(s) need restocking soon.`}
                   </p>
                 </div>
                 <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-100">
@@ -271,26 +297,37 @@ const Alerts = () => {
                     <strong>{Math.round((optimalAlerts.length / Math.max(products.length, 1)) * 100)}%</strong>.
                     {optimalAlerts.length === products.length 
                       ? ' Perfect! All products are optimally stocked.' 
-                      : ` You can improve by addressing ${criticalCount + warningCount} alert(s).`}
+                      : ` You can improve by addressing ${criticalCount} alert(s).`}
                   </p>
                 </div>
-                {criticalCount > 0 && (
-                  <div className="p-6 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl border border-red-100">
-                    <h3 className="font-semibold text-red-800 mb-3">⚠️ Urgent Actions</h3>
+                {outOfStockCount > 0 && (
+                  <div className="p-6 bg-gradient-to-br from-red-50 to-rose-50 rounded-xl border border-red-100">
+                    <h3 className="font-semibold text-red-800 mb-3">🚫 Out of Stock Crisis</h3>
                     <p className="text-sm text-red-700">
-                      {criticalCount} product(s) are critically low. Immediate action required to prevent stock-outs 
-                      and potential loss of sales opportunities.
+                      {outOfStockCount} product(s) are completely out of stock! This is causing immediate sales loss. 
+                      Place emergency orders and consider alternative suppliers for faster delivery.
+                    </p>
+                  </div>
+                )}
+                {criticalCount > 0 && (
+                  <div className="p-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-100">
+                    <h3 className="font-semibold text-orange-800 mb-3">⚠️ Urgent Actions</h3>
+                    <p className="text-sm text-orange-700">
+                      {criticalCount} product(s) require immediate attention. Review the suggested reorder quantities above 
+                      and place orders within 24-48 hours to prevent stockouts and maintain customer satisfaction.
                     </p>
                   </div>
                 )}
                 <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-100">
                   <h3 className="font-semibold text-green-800 mb-3">💡 Smart Recommendation</h3>
                   <p className="text-sm text-green-700">
-                    {criticalCount > 0 
-                      ? `Focus on restocking low-stock items first. Estimated reorder value needed for optimal levels.`
+                    {outOfStockCount > 0 
+                      ? `Priority: Restock out-of-stock items immediately. Then address low stock items to prevent future stockouts.`
+                      : criticalCount > 0
+                      ? `Focus on restocking low-stock items first. Set up automated reorder notifications for better management.`
                       : optimalAlerts.length === products.length
-                      ? 'Excellent inventory management! Continue monitoring to maintain these levels.'
-                      : 'Review overstock items to free up capital and storage space.'}
+                      ? 'Excellent inventory management! Continue monitoring to maintain these optimal levels.'
+                      : 'Review stock levels regularly and set appropriate min/max thresholds for better control.'}
                   </p>
                 </div>
               </div>
