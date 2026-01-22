@@ -1,0 +1,11 @@
+product_name,cost_per_unit,current_stock,category
+Urea,500,100,Fertilizer
+DAP,1200,50,Fertilizer
+NPK,800,75,Fertilizer
+Rice Seeds,150,200,Seed
+Wheat Seeds,200,150,Seed
+Insecticide,450,80,Pesticide
+Fungicide,380,60,Pesticide
+Herbicide,520,90,Pesticide
+Organic Compost,300,120,Fertilizer
+Tomato Seeds,180,110,Seed
