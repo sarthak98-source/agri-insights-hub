@@ -1,19 +1,19 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { ENV } from './lib/env.js';
 import { connectDB } from './lib/db.js';
 import productRoutes from './routes/product.routes.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 
-// CORS Configuration - IMPORTANT: Allow your frontend port
+// CORS Configuration
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:8080',
-    'http://localhost:8081',
-    'http://localhost:3000'
-  ],
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -23,40 +23,42 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.get('/', (req, res) => {
-    res.json({ message: 'Agri Insights Hub API is running correctly ✅' });
-});
+// ✅ Serve React frontend build
+app.use(express.static(path.join(__dirname, '../Frontend/dist')));
 
+// API Routes
 app.use('/api/products', productRoutes);
+
+// ✅ Catch-all: send React app for any non-API route
+app.get('*', (req, res) => {
+  // Don't catch API routes
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ message: 'API route not found' });
+  }
+  res.sendFile(path.join(__dirname, '../Frontend/dist', 'index.html'));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err.stack);
-  res.status(500).json({ 
-    message: 'Something went wrong!', 
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined 
+  res.status(500).json({
+    message: 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
 });
 
 // Starting the server with DB connection
 const startServer = async () => {
-    try {
-        await connectDB();
-        app.listen(ENV.PORT, () => {
-            console.log(`✅ Server is running on port: ${ENV.PORT}`);
-            console.log(`✅ API available at: http://localhost:${ENV.PORT}`);
-            console.log(`✅ Accepting requests from: localhost:5173, localhost:8080`);
-        });
-    } catch (error) {
-        console.error("❌ Error starting server:", error.message);
-        process.exit(1);
-    }
+  try {
+    await connectDB();
+    app.listen(ENV.PORT, () => {
+      console.log(`✅ Server running on port: ${ENV.PORT}`);
+      console.log(`✅ Frontend served from: /Frontend/dist`);
+    });
+  } catch (error) {
+    console.error("❌ Error starting server:", error.message);
+    process.exit(1);
+  }
 };
 
 startServer();
