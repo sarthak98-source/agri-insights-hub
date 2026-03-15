@@ -24,18 +24,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ✅ Serve React frontend build
-app.use(express.static(path.join(__dirname, '../Frontend/dist')));
+// server.js is at Backend/src/, so go up 2 levels to reach project root, then into Frontend/dist
+app.use(express.static(path.join(__dirname, '../../Frontend/dist')));
 
 // API Routes
 app.use('/api/products', productRoutes);
 
 // ✅ Catch-all: send React app for any non-API route
 app.get('*', (req, res) => {
-  // Don't catch API routes
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ message: 'API route not found' });
   }
-  res.sendFile(path.join(__dirname, '../Frontend/dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../../Frontend/dist', 'index.html'));
 });
 
 // Error handling middleware
