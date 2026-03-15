@@ -1,7 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
-
-// Debug: Log API URL
-console.log('API Base URL:', API_BASE_URL);
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export interface Product {
   _id?: string;
@@ -142,7 +139,6 @@ export const generateAlerts = (products: Product[]): Alert[] => {
     const minStock = product.minStockLevel || 10;
     const maxStock = product.maxStockLevel || 1000;
 
-    // Check for out of stock
     if (product.quantity === 0) {
       alerts.push({
         type: 'out_of_stock',
@@ -151,10 +147,9 @@ export const generateAlerts = (products: Product[]): Alert[] => {
         message: `Product is out of stock! Immediate reorder required.`,
         minStockLevel: minStock
       });
-      return; // Skip other checks for out of stock items
+      return;
     }
 
-    // Check for expiring soon
     if (product.expiryDate) {
       const expiryDate = new Date(product.expiryDate);
       if (expiryDate >= now && expiryDate <= fiveDaysFromNow) {
@@ -168,7 +163,6 @@ export const generateAlerts = (products: Product[]): Alert[] => {
       }
     }
 
-    // Check stock levels
     if (product.quantity <= minStock) {
       alerts.push({
         type: 'low_stock',
